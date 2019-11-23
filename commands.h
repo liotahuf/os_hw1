@@ -10,10 +10,19 @@
 #include <sys/wait.h>
 #define MAX_LINE_SIZE 80
 #define MAX_ARG 20
+
+//added defines
+#define HIST_SIZE 50
+
 typedef enum { FALSE , TRUE } bool;
 int ExeComp(char* lineSize);
 int BgCmd(char* lineSize, void* jobs);
 int ExeCmd(void* jobs, char* lineSize, char* cmdString);
 void ExeExternal(char *args[MAX_ARG], char* cmdString);
+//added functions
+void updateHistory(char *lineSize, history* hist);
+
+typedef struct History history;
+
 #endif
 

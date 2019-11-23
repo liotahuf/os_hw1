@@ -1,13 +1,20 @@
 //		commands.c
 //********************************************
 #include "commands.h"
+
+struct History{
+	char* cmds [HIST_SIZE-1];
+	int oldes_cmd;
+	int newest_cmd;
+
+}
 //********************************************
 // function name: ExeCmd
 // Description: interperts and executes built-in commands
 // Parameters: pointer to jobs, command string
 // Returns: 0 - success,1 - failure
 //**************************************************************************************
-int ExeCmd(void* jobs, char* lineSize, char* cmdString)
+int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 {
 	char* cmd; 
 	char* args[MAX_ARG];
@@ -74,7 +81,27 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 			
 			
 		}
-	} 
+	}
+/*************************************************/
+	else if (!strcmp(cmd, "history")) 
+	{
+  		if (num_arg != 0){
+			illegal_cmd = TRUE;
+		}
+		else
+		{
+			int curr_cmd = hist->cmds[hist->oldes_cmd]
+			while(curr_cmd != hist->newest_cmd)
+			{
+				if(hist->cmds[curr_cmd]!=NULL)
+				{
+					printf("%s",hist->cmds[curr_cmd]);
+					curr_cmd ++;
+				}
+			}
+		}
+		
+	}	
 	
 	/*************************************************/
 	else if (!strcmp(cmd, "pwd")) 
@@ -106,7 +133,15 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 	/*************************************************/
 	else if (!strcmp(cmd, "showpid")) 
 	{
-		
+			if (num_arg != 0) // showpid should have no addicional arguments
+		{
+			illegal_cmd = TRUE;
+		}
+		else //legal commmand
+		{
+			printf("smash pid is %d\n",getpid());
+			return 0;
+		}
 	}
 	/*************************************************/
 	else if (!strcmp(cmd, "fg")) 
@@ -215,4 +250,24 @@ int BgCmd(char* lineSize, void* jobs)
 	}
 	return -1;
 }
+//**************************************************************************************
+// function name: updateHistory
+// Description: update the history list of commands
+// Parameters: command string, pointer history
+// Returns: no resturn(void)
+//**************************************************************************************
 
+void updateHistory(char *lineSize, history* hist)
+{
+	if (lineSize == NULL)//the command line is empty
+	{
+		return; 
+	}
+	hits->cmds[hist->newest_cmd] = lineSize;
+	hist->newest_cmd = (hist->newest_cmd +1) % HIST_SIZE;
+	if (hist->newest_cmd == hist->oldest_cmd)
+	{
+		hist->oldest_cmd++;
+	}
+	
+}
