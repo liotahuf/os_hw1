@@ -26,6 +26,8 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 			num_arg++; 
  
 	}
+	
+	static char* lastDir = NULL;
 /*************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED
 // ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
@@ -33,13 +35,61 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 /*************************************************/
 	if (!strcmp(cmd, "cd") ) 
 	{
-		
+		int chdir_error =0;
+		if (num_arg != 1) // not enougth args for cd command
+		{
+			illegal_cmd = TRUE; 
+		}
+		else 
+		{	char *buf =NULL;//so getdir mallocs the size of pwd
+			if (args[1]=="-") // return to last dir
+			{
+				if (lastDir!= NULL)
+				{
+					chdir_error = chdir(lastDir);
+					if(chdir_error==-1) // chdir returned an error
+					{
+						perror("chdir fail\n");
+						return 1;
+					}
+					else //chdir successed,update lastDir
+					{
+						lastDir = buf;
+					}	return 0; //success
+				}
+			}else //chdri to dir in arg[1]
+			{
+				chdir_error = chdir(args[1]);
+				if(chdir_error==-1) // chdir returned an error
+				{
+					perror("smash error: > %s - path not found",args[1]);
+					return 1;
+				}
+				else //chdir successed,update lastDir
+				{
+					lastDir = buf;
+				}	return 0; //success
+			}
+		}
+			
+			
+		}
 	} 
 	
 	/*************************************************/
 	else if (!strcmp(cmd, "pwd")) 
 	{
-		
+		if (num_arg != 0){
+			illegal_cmd = TRUE;
+		}
+		else {
+			if (getcwd(pwd,sizeof(pwd))!= NULL){
+				printf("%s\n", pwd);
+			}
+			else {
+				perror ("pwd failed\n");
+			}
+		}
 	}
 	
 	/*************************************************/
