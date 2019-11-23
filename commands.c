@@ -267,7 +267,7 @@ void updateHistory(char *lineSize, history* hist)
 	hist->newest_cmd = (hist->newest_cmd +1) % HIST_SIZE;
 	if (hist->newest_cmd == hist->oldest_cmd)
 	{
-		hist->oldest_cmd++;
+		hist->oldest_cmd=(hist->oldest_cmd + 1)%HIST_SIZE;
 	}
 	
 }
