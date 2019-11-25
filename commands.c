@@ -4,8 +4,8 @@
 
 struct History{
 	char* cmds [HIST_SIZE-1];
-	int oldes_cmd;
-	int newest_cmd;
+	int oldes_cmd_idx;
+	int newest_cmd_idx;
 
 }
 //********************************************
@@ -61,9 +61,11 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 					}
 					else //chdir successed,update lastDir
 					{
-						lastDir = buf;
+						lastDir = getcwd(buf);
 					}	return 0; //success
 				}
+				else // TODO
+
 			}else //chdri to dir in arg[1]
 			{
 				chdir_error = chdir(args[1]);
@@ -74,7 +76,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 				}
 				else //chdir successed,update lastDir
 				{
-					lastDir = buf;
+					lastDir = getcwd(buf);
 				}	return 0; //success
 			}
 		}
@@ -263,11 +265,20 @@ void updateHistory(char *lineSize, history* hist)
 	{
 		return; 
 	}
-	hits->cmds[hist->newest_cmd] = lineSize;
-	hist->newest_cmd = (hist->newest_cmd +1) % HIST_SIZE;
-	if (hist->newest_cmd == hist->oldest_cmd)
+	if (hits->cmds[hist->newest_cmd_idx] != NULL)
+		free(hits->cmds[hist->newest_cmd_idx]);
+	hits->cmds[hist->newest_cmd_idx] = (char*)malloc(sizeof(char)*(strlen(lineSize)+1));
+	if (hits->cmds[hist->newest_cmd_idx] == NULL)
 	{
-		hist->oldest_cmd=(hist->oldest_cmd + 1)%HIST_SIZE;
+		perror("dynamic allocation failed\n");
+		return;
+	}
+	strcpy(hits->cmds[hist->newest_cmd_idx], lineSize);
+
+	hist->newest_cmd_idx = (hist->newest_cmd_idx +1) % HIST_SIZE;
+	if (hist->newest_cmd_idx == hist->oldest_cmd_idx)
+	{
+		hist->oldest_cmd_idx =(hist->oldest_cmd_idx + 1)%HIST_SIZE;
 	}
 	
 }
