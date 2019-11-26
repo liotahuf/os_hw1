@@ -11,8 +11,11 @@
 #define MAX_LINE_SIZE 80
 #define MAX_ARG 20
 
+
 //added defines
 #define HIST_SIZE 50
+#define MAX_JOBS_SIZE 100
+#define MAX_JOB_NAME 50
 
 typedef enum { FALSE , TRUE } bool;
 int ExeComp(char* lineSize);
@@ -31,6 +34,14 @@ void updateHistory(char *lineSize, history* hist);
 	 bool full;
 
  }history;
+
+ typedef struct Job {
+	 char job_name [MAX_JOB_NAME];
+	 int pid;
+	 int time;
+	 bool stopped;
+
+ } job;
 
 #endif
 

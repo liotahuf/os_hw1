@@ -9,7 +9,7 @@
 // Parameters: pointer to jobs, command string
 // Returns: 0 - success,1 - failure
 //**************************************************************************************
-int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
+int ExeCmd(job* jobs, char* lineSize, char* cmdString, history* hist)
 {
 	char* cmd; 
 	char* args[MAX_ARG];
@@ -124,6 +124,9 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 	else if (!strcmp(cmd, "jobs")) 
 	{
  		
+
+
+
 	}
 	/*************************************************/
 	else if (!strcmp(cmd, "showpid")) 
