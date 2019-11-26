@@ -22,7 +22,15 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString);
 //added functions
 void updateHistory(char *lineSize, history* hist);
 
-typedef struct History history;
+
+
+ typedef struct History {
+	 char* cmds[HIST_SIZE - 1];
+	 int oldest_cmd_idx;
+	 int newest_cmd_idx;
+	 bool full;
+
+ }history;
 
 #endif
 

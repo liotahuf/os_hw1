@@ -2,12 +2,7 @@
 //********************************************
 #include "commands.h"
 
-struct History{
-	char* cmds [HIST_SIZE-1];
-	int oldes_cmd_idx;
-	int newest_cmd_idx;
 
-}
 //********************************************
 // function name: ExeCmd
 // Description: interperts and executes built-in commands
@@ -275,8 +270,13 @@ void updateHistory(char *lineSize, history* hist)
 	}
 	strcpy(hits->cmds[hist->newest_cmd_idx], lineSize);
 
-	hist->newest_cmd_idx = (hist->newest_cmd_idx +1) % HIST_SIZE;
-	if (hist->newest_cmd_idx == hist->oldest_cmd_idx)
+	hist->newest_cmd_idx = (hist->newest_cmd_idx + 1);
+	if (hist->newest_cmd_idx == HIST_SIZE)
+	{
+		hist->full = 1;
+		hist->newest_cmd_idx = hist->newest_cmd_idx % HIST_SIZE;
+	}
+	if ((hist->newest_cmd_idx == hist->oldest_cmd_idx+1)  &&(hist->full ==1))
 	{
 		hist->oldest_cmd_idx =(hist->oldest_cmd_idx + 1)%HIST_SIZE;
 	}

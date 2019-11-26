@@ -40,9 +40,10 @@ int main(int argc, char *argv[])
 	/************************************/
 	// Init globals 
 	
-	history smashHist //initialize history list
-	smashHist.oldest_cmd = 0;
-	smashHist.newest_cmd = 0;
+	history smashHist;//initialize history list
+	smashHist.oldest_cmd_idx = 0;
+	smashHist.newest_cmd_idx = 0;
+	smashHist.full = 0; //not fulled,just initialized it
 	
 	L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
 	if (L_Fg_Cmd == NULL) 
