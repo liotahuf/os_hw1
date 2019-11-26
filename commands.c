@@ -261,25 +261,71 @@ void updateHistory(char *lineSize, history* hist)
 	{
 		return; 
 	}
-	if (hits->cmds[hist->newest_cmd_idx] != NULL)
-		free(hits->cmds[hist->newest_cmd_idx]);
-	hits->cmds[hist->newest_cmd_idx] = (char*)malloc(sizeof(char)*(strlen(lineSize)+1));
-	if (hits->cmds[hist->newest_cmd_idx] == NULL)
-	{
-		perror("dynamic allocation failed\n");
-		return;
-	}
-	strcpy(hits->cmds[hist->newest_cmd_idx], lineSize);
+	
+	strcpy(hist->cmds[hist->newest_cmd_idx], lineSize);
 
 	hist->newest_cmd_idx = (hist->newest_cmd_idx + 1);
-	if (hist->newest_cmd_idx == HIST_SIZE)
+	if (hist->newest_cmd_idx == HIST_SIZE && hist->full == 0)//cmd list was not full and now we got the cmd n0 50 then it is now full
 	{
 		hist->full = 1;
 		hist->newest_cmd_idx = hist->newest_cmd_idx % HIST_SIZE;
 	}
-	if ((hist->newest_cmd_idx == hist->oldest_cmd_idx+1)  &&(hist->full ==1))
+	if ((hist->newest_cmd_idx == hist->oldest_cmd_idx+1)  &&(hist->full ==1)) //if newest command overflowed to low indexed,then need to update oldest idx
 	{
 		hist->oldest_cmd_idx =(hist->oldest_cmd_idx + 1)%HIST_SIZE;
 	}
 	
+}
+
+//**************************************************************************************
+// function name: updateJobs
+// Description: update the array of jobs wich are ruunig or suspended
+// Parameters: command string, pointer history
+// Returns: no resturn(void)
+//**************************************************************************************
+
+void updateJobs(job jobs[MAX_JOBS_SIZE])
+{
+	job tmp_jobs[MAX_JOBS_SIZE];//used to stored jobs from not updated jobs array whicht are not finished yet
+	int i = 0;
+	int j = 0;
+	for (i=0;i<MAX_JOBS_SIZE;i++)
+	{
+		//if pid -1,cant do waitpid,but this means we are at the jobs array where there are any more real jobs,so exit the loop
+		if (jobs[i].pid==-1)
+		{
+			break;
+		}
+		if (waitpid(jobs[i].pid, NULL, WNOHANG) == 0) //in this case, the job is not over! need to keep it in the array
+		{
+			//copy job filed to tmp jobs array
+			strcpy(tmp_jobs[j].job_name, jobs[i].job_name);
+			tmp_jobs[j].pid = jobs[i].pid;
+			tmp_jobs[j].time = jobs[i].time;
+			tmp_jobs[j].stopped = jobs[i].stopped;
+			j++;
+		}
+	}
+	//now,update the original jobs array
+	for (i = 0; i < MAX_JOBS_SIZE; i++)
+	{
+		//places in the jobs array where there are still jobs
+		if (i < j)
+		{
+			strcpy(jobs[i].job_name, tmp_jobs[j].job_name);
+			jobs[i].pid = tmp_jobs[j].pid ;
+			jobs[i].time = tmp_jobs[j].time ;
+			jobs[i].stopped = tmp_jobs[j].stopped ;
+			
+		}
+		else // initialize rest of jobs array to initial condition
+		{
+			strcpy(jobs[i].job_name,"\0");
+			jobs[i].pid = -1;
+			jobs[i].time = 0;
+			jobs[i].stopped = 0;
+		}
+
+	}
+
 }

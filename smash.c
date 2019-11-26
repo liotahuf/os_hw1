@@ -39,13 +39,30 @@ int main(int argc, char *argv[])
 	/************************************/
 
 	/************************************/
-	// Init globals 
+	// Init globals
+
+	/*---------initialize history zrray----------------*/
+	history smashHist;
+	for (int i = 0; i < HIST_SIZE; i++)
+	{
+		strcpy(smashHist.cmds[i] ,"\0");// all history commands are nothing
+	}
 	
-	history smashHist;//initialize history list
-	smashHist.cmds[HIST_SIZE - 1] = { NULL };
 	smashHist.oldest_cmd_idx = 0;
 	smashHist.newest_cmd_idx = 0;
 	smashHist.full = 0; //not fulled,just initialized it
+
+	/*---------initialize jobs array----------------*/
+
+	for (int i = 0; i < MAX_JOBS_SIZE; i++)
+	{
+		strcpy(jobs[i].job_name, "\0");//initialize jobs name so we know after that 
+		jobs[i].pid = -1; //no real process can have pid negative in linux(according to google)
+		jobs[i].time = 0;
+		jobs[i].stopped = 0;
+	}
+	
+	
 	
 	L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
 	if (L_Fg_Cmd == NULL) 

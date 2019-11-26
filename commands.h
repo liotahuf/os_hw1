@@ -24,11 +24,11 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString);
 void ExeExternal(char *args[MAX_ARG], char* cmdString);
 //added functions
 void updateHistory(char *lineSize, history* hist);
-
+void updateJobs(job jobs[MAX_JOBS_SIZE]);
 
 
  typedef struct History {
-	 char* cmds[HIST_SIZE - 1];
+	 char cmds[HIST_SIZE - 1][MAX_LINE_SIZE];
 	 int oldest_cmd_idx;
 	 int newest_cmd_idx;
 	 bool full;
