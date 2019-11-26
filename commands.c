@@ -59,7 +59,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 						lastDir = getcwd(buf);
 					}	return 0; //success
 				}
-				else // TODO
+				else {} // TODO
 
 			}else //chdri to dir in arg[1]
 			{
@@ -77,7 +77,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 		}
 			
 			
-		}
+		
 	}
 /*************************************************/
 	else if (!strcmp(cmd, "history")) 
@@ -87,14 +87,15 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 		}
 		else
 		{
-			int curr_cmd = hist->cmds[hist->oldes_cmd]
-			while(curr_cmd != hist->newest_cmd)
+			int curr_cmd = hist->cmds[hist->oldest_cmd_idx];
+			while(curr_cmd != hist->newest_cmd_idx)
 			{
 				if(hist->cmds[curr_cmd]!=NULL)
 				{
 					printf("%s",hist->cmds[curr_cmd]);
-					curr_cmd ++;
+					
 				}
+				curr_cmd++;
 			}
 		}
 		
@@ -117,10 +118,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString, history* hist)
 	}
 	
 	/*************************************************/
-	else if (!strcmp(cmd, "mkdir"))
-	{
- 		
-	}
+
 	/*************************************************/
 	
 	else if (!strcmp(cmd, "jobs")) 

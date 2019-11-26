@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
 	// Init globals 
 	
 	history smashHist;//initialize history list
+	smashHist.cmds[HIST_SIZE - 1] = { NULL };
 	smashHist.oldest_cmd_idx = 0;
 	smashHist.newest_cmd_idx = 0;
 	smashHist.full = 0; //not fulled,just initialized it
