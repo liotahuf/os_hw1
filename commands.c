@@ -226,7 +226,7 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 			
 			default:
                 	// in this case, this is the parent process,we need to update the fg process.
-				//TBD
+				// TBDwaitpid(pID);
 					
 	}
 }
