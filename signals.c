@@ -2,11 +2,11 @@
 // contains signal handler funtions
 // contains the function/s that set the signal handlers
 
-
 #include "signals.h"
 #include "commands.h"
 
-job* L_Fg_Cmd;
+extern job* L_Fg_Cmd;
+extern job* jobs[MAX_JOBS_SIZE];
 
 
 //********************************************
@@ -36,16 +36,14 @@ void handler_cntlc()
 {
 	printf("\n");
 	if (L_Fg_Cmd != NULL) {
-		if (kill(jobs.fg_job->pid, SIGINT) == -1)
+		if (kill(L_Fg_Cmd->pid, SIGINT) == -1)
 		{
-			perror("^C: ");
-			jobs.fg_job = NULL;
+			perror("ctrl C did not work\n");
 		}
 		else
 		{
-			printf("[%d]  Terminated  %s\n", jobs.fg_job->jobID, jobs.fg_job->name.c_str());
-			jobs.fg_job->proc_state = BG;
-			jobs.fg_job = NULL;
+			printf("%d job run ended in the foreground  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
+			L_Fg_Cmd->state = BACKGROUND;
 		}
 	}
 }
@@ -63,6 +61,25 @@ void handler_cntlc()
 //**************************************************************************************
 void handler_cntlz()
 {
-
+	printf("\n");
+	if (L_Fg_Cmd != NULL) {
+		if (kill(L_Fg_Cmd->pid, SIGTSTP) == -1)
+		{
+			perror("ctrl Z did not work\n");
+		}
+		else
+		{
+			printf("%d job stopped  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
+			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			{
+				if (jobs[i] == NULL)
+				{
+					jobs[i] = L_Fg_Cmd;
+					break;
+				}
+			}
+			L_Fg_Cmd->state = STOPPED;
+		}
+	}
 }
 

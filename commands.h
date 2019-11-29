@@ -17,6 +17,7 @@
 #define MAX_JOBS_SIZE 100
 #define MAX_JOB_NAME 50
 
+typedef enum {FORGROUND, BACKGROUND, STOPPED} process_state;
 typedef enum { FALSE , TRUE } bool;
 int ExeComp(char* lineSize);
 int BgCmd(char* lineSize, void* jobs);
@@ -39,8 +40,8 @@ void updateJobs(job jobs[MAX_JOBS_SIZE]);
 	 char job_name [MAX_JOB_NAME];
 	 int pid;
 	 long int entry_time;
-	 bool stopped;
-
+	 process_state state;
+	 //bool stopped;
  } job;
 
  int fgPid;
