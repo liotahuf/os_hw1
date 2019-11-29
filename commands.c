@@ -88,14 +88,14 @@ int ExeCmd(job* jobs, char* lineSize, char* cmdString, history* hist)
 		else
 		{
 			int curr_cmd = hist->cmds[hist->oldest_cmd_idx];
-			while(curr_cmd != hist->newest_cmd_idx)
+			while(curr_cmd != hist->newest_cmd_idx-1)
 			{
 				if(hist->cmds[curr_cmd]!=NULL)
 				{
 					printf("%s",hist->cmds[curr_cmd]);
 					
 				}
-				curr_cmd++;
+				curr_cmd = (curr_cmd +1)% HIST_SIZE;
 			}
 		}
 		
@@ -124,7 +124,39 @@ int ExeCmd(job* jobs, char* lineSize, char* cmdString, history* hist)
 	else if (!strcmp(cmd, "jobs")) 
 	{
  		
+		if (num_arg != 0) {
+			illegal_cmd = TRUE;
+		}
+		else
+		{
+			updateJobs(jobs);
+			int i;
+			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			{
+				if (jobs->pid = -1)
+				{
+					break;
+				}
+				//get elapsed time in seconds since the Epoch (00:00:00 UTC, January 1, 1970)
+				time_t seconds;
+				seconds = time(NULL);
+				long int curr_time= (long int)seconds;
+				//calculate time in jobs -> elapsed time - entry time(entry time is updated to each jobs entering the jobs list,and it is time in seconds from the Epoch (00:00:00 UTC, January 1, 1970) until the jobs enetered the list )
+				
+				long int time_in_job_list;
+				time_in_job_list = curr_time - jobs->entry_time;
+				if (jobs->stopped == 1)
+				{
+					printf("[%d] %s : %d %ld secs (Stopped)\n", i, jobs->job_name[i], jobs->pid, curr_time);
+				}
+				else
+				{
+					printf("[%d] %s : %d %ld secs\n", i, jobs->job_name[i], jobs->pid, curr_time);
+				}
+				
+			}
 
+		}
 
 
 	}
@@ -251,7 +283,7 @@ int BgCmd(char* lineSize, void* jobs)
 //**************************************************************************************
 // function name: updateHistory
 // Description: update the history list of commands
-// Parameters: command string, pointer history
+// Parameters: command string, pointer to history(struc of array of cmds,idx to oldest comd and idx to newest cmd)
 // Returns: no resturn(void)
 //**************************************************************************************
 
@@ -301,7 +333,7 @@ void updateJobs(job jobs[MAX_JOBS_SIZE])
 			//copy job filed to tmp jobs array
 			strcpy(tmp_jobs[j].job_name, jobs[i].job_name);
 			tmp_jobs[j].pid = jobs[i].pid;
-			tmp_jobs[j].time = jobs[i].time;
+			tmp_jobs[j].entry_time = jobs[i].entry_time;
 			tmp_jobs[j].stopped = jobs[i].stopped;
 			j++;
 		}
@@ -314,7 +346,7 @@ void updateJobs(job jobs[MAX_JOBS_SIZE])
 		{
 			strcpy(jobs[i].job_name, tmp_jobs[j].job_name);
 			jobs[i].pid = tmp_jobs[j].pid ;
-			jobs[i].time = tmp_jobs[j].time ;
+			jobs[i].entry_time = tmp_jobs[j].entry_time ;
 			jobs[i].stopped = tmp_jobs[j].stopped ;
 			
 		}
@@ -322,7 +354,7 @@ void updateJobs(job jobs[MAX_JOBS_SIZE])
 		{
 			strcpy(jobs[i].job_name,"\0");
 			jobs[i].pid = -1;
-			jobs[i].time = 0;
+			jobs[i].entry_time = 0;
 			jobs[i].stopped = 0;
 		}
 

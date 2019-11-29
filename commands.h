@@ -38,7 +38,7 @@ void updateJobs(job jobs[MAX_JOBS_SIZE]);
  typedef struct Job {
 	 char job_name [MAX_JOB_NAME];
 	 int pid;
-	 int time;
+	 long int entry_time;
 	 bool stopped;
 
  } job;

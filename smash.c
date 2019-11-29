@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	{
 		strcpy(jobs[i].job_name, "\0");//initialize jobs name so we know after that 
 		jobs[i].pid = -1; //no real process can have pid negative in linux(according to google)
-		jobs[i].time = 0;
+		jobs[i].entry_time = 0;
 		jobs[i].stopped = 0;
 	}
 	
