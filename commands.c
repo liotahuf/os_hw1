@@ -9,7 +9,7 @@
 // Parameters: pointer to jobs, command string
 // Returns: 0 - success,1 - failure
 //**************************************************************************************
-int ExeCmd(job* jobs, char* lineSize, char* cmdString, history* hist)
+int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hist)
 {
 	char* cmd; 
 	char* args[MAX_ARG];
@@ -212,28 +212,22 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 	int pID;
     	switch(pID = fork()) 
 	{
-    		case -1: 
-					// Add your code here (error)
-					
-					/* 
-					your code
-					*/
+    		case -1:
+				perror("fork error\n");
+				return;
+							
         	case 0 :
                 	// Child Process
                		setpgrp();
-					
-			        // Add your code here (execute an external command)
-					
-					/* 
-					your code
-					*/
+					execv(cmdString, args);
+					//execv only return in case of error,so if the code reached the next line an error ocurred
+					perror("cannot execute command");
+					return;
 			
 			default:
-                	// Add your code here
+                	// in this case, this is the parent process,we need to update the fg process.
+				// TBDwaitpid(pID);
 					
-					/* 
-					your code
-					*/
 	}
 }
 //**************************************************************************************
@@ -248,11 +242,7 @@ int ExeComp(char* lineSize)
 	char *args[MAX_ARG];
     if ((strstr(lineSize, "|")) || (strstr(lineSize, "<")) || (strstr(lineSize, ">")) || (strstr(lineSize, "*")) || (strstr(lineSize, "?")) || (strstr(lineSize, ">>")) || (strstr(lineSize, "|&")))
     {
-		// Add your code here (execute a complicated command)
-					
-		/* 
-		your code
-		*/
+		return 0;
 	} 
 	return -1;
 }
@@ -262,21 +252,72 @@ int ExeComp(char* lineSize)
 // Parameters: command string, pointer to jobs
 // Returns: 0- BG command -1- if not
 //**************************************************************************************
-int BgCmd(char* lineSize, void* jobs)
+int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 {
 
 	char* Command;
 	char* delimiters = " \t\n";
 	char *args[MAX_ARG];
+	if (strlen(lineSize) < 2) // not long enougth to be bgcmd
+	{
+		return -1;
+	}
 	if (lineSize[strlen(lineSize)-2] == '&')
 	{
 		lineSize[strlen(lineSize)-2] = '\0';
-		// Add your code here (execute a in the background)
-					
-		/* 
-		your code
-		*/
+		// parse comd
+		Command = strtok(lineSize, delimiters);
+		if (Command == NULL)
+			return -1;
+		args[0] = Command;
+		for (int i = 1; i < MAX_ARG; i++)
+		{
+			args[i] = strtok(NULL, delimiters);
+		}
 		
+		int pID;
+		
+		switch (pID = fork())
+		{
+		case -1:
+			perror("fork error\n");
+			return;
+
+		case 0:
+			// Child Process
+			setpgrp();
+			execv(Command, args);
+			//execv only return in case of error,so if the code reached the next line an error ocurred
+			perror("cannot execute command");
+			return -1;
+
+		default:
+			// in this case, this is the parent process,we need to update the jobs list process.
+			
+			{
+				int i;
+				//find free idx in jobs array
+				for (i = 0; i < MAX_JOBS_SIZE; i++)
+				{
+					if (jobs->pid == -1)
+					{
+						break;
+					}
+				}
+				strcpy(jobs->job_name, Command);
+				//get entry time in jobs list
+				time_t seconds;
+				seconds = time(NULL);
+				long int curr_time = (long int)seconds;
+				jobs->entry_time = curr_time;
+				//job pid is the int pID because in case of father process, fork returns the child pid
+				jobs->pid = pID;
+				jobs->stopped = FALSE;//was not stoped by ctrl-Z
+			}
+			
+
+		}
+			   			
 	}
 	return -1;
 }
