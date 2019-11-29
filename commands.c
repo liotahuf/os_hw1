@@ -198,6 +198,15 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				fgPid = jobs[i].pid;
 				strcpy(fgCmd, jobs[i].job_name);
 				printf("%s", fgCmd);
+				if (jobs[i].stopped == 1) //suspeded process need to wake it up
+				{
+					int kill_error = kill(fgPid, SIGCONT);
+					if (kill_error == -1)
+					{
+						perror("kill error\n");
+						return 1;
+					}
+				}
 				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
@@ -228,6 +237,15 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				fgPid = jobs[i].pid;
 				strcpy(fgCmd, jobs[i].job_name);
 				printf("%s", fgCmd);
+				if (jobs[i].stopped == 1) //suspeded process need to wake it up
+				{
+					int kill_error = kill(fgPid, SIGCONT);
+					if (kill_error == -1)
+					{
+						perror("kill error\n");
+						return 1;
+					}
+				}
 				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
