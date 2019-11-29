@@ -133,7 +133,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			int i;
 			for (i = 0; i < MAX_JOBS_SIZE; i++)
 			{
-				if (jobs->pid = -1)
+				if (jobs[i].pid = -1)
 				{
 					break;
 				}
@@ -144,14 +144,14 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				//calculate time in jobs -> elapsed time - entry time(entry time is updated to each jobs entering the jobs list,and it is time in seconds from the Epoch (00:00:00 UTC, January 1, 1970) until the jobs enetered the list )
 				
 				long int time_in_job_list;
-				time_in_job_list = curr_time - jobs->entry_time;
-				if (jobs->stopped == 1)
+				time_in_job_list = curr_time - jobs[i].entry_time;
+				if (jobs[i].stopped == 1)
 				{
-					printf("[%d] %s : %d %ld secs (Stopped)\n", i, jobs->job_name[i], jobs->pid, curr_time);
+					printf("[%d] %s : %d %ld secs (Stopped)\n", i, jobs[i].job_name, jobs[i].pid, time_in_job_list);
 				}
 				else
 				{
-					printf("[%d] %s : %d %ld secs\n", i, jobs->job_name[i], jobs->pid, curr_time);
+					printf("[%d] %s : %d %ld secs\n", i, jobs[i].job_name, jobs[i].pid, time_in_job_list);
 				}
 				
 			}
@@ -176,6 +176,71 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 	/*************************************************/
 	else if (!strcmp(cmd, "fg")) 
 	{
+		updateJobs(jobs);//first,update jobs list
+		if (num_arg == 0) // showpid should have no addicional arguments
+		{
+			int i;
+			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			{
+				if (jobs[i].pid == -1)
+				{
+					break;
+				}
+			}
+			if (i == 0) // if there are no real jobs at jobs list
+			{
+				illegal_cmd = TRUE;
+			}
+			else
+			{
+				i--;
+
+				fgPid = jobs[i].pid;
+				strcpy(fgCmd, jobs[i].job_name);
+				printf("%s", fgCmd);
+				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				if (waitpid_error == -1)//error in waitpid
+				{
+					perror("waitpid error\n");
+
+				}
+				//return fg process variable to "no fg" process state
+				fgPid = -1;
+				strcpy(fgCmd, "\0");
+				return 0;
+
+			}
+			
+
+		}
+		else //if (num_arg == 1)?? what to do when fg 1 3?
+		{
+			int i;
+			sscanf(args[i], "%d", &i);//get number of the chose job to move to fg
+						
+			if (jobs[i].pid == -1)//make sure it is a legal cmd,i.e., the chosen process does exist in job list
+			{
+				illegal_cmd = TRUE;
+
+			}
+			else
+			{
+				fgPid = jobs[i].pid;
+				strcpy(fgCmd, jobs[i].job_name);
+				printf("%s", fgCmd);
+				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				if (waitpid_error == -1)//error in waitpid
+				{
+					perror("waitpid error\n");
+
+				}
+				//return fg process variable to "no fg" process state
+				fgPid = -1;
+				strcpy(fgCmd, "\0");
+				return 0;
+			}
+			
+		}
 		
 	} 
 	/*************************************************/
@@ -219,14 +284,24 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
         	case 0 :
                 	// Child Process
                		setpgrp();
-					execv(cmdString, args);
+					execvp(cmdString, args);
 					//execv only return in case of error,so if the code reached the next line an error ocurred
 					perror("cannot execute command");
 					return;
 			
 			default:
-                	// in this case, this is the parent process,we need to update the fg process.
-				// TBDwaitpid(pID);
+                	// in this case, this is the parent process,we run the fg process.
+				fgPid = pID;//update fg process in order to know who to suspend in case of ctrl-Z
+				strcpy(fgCmd, cmdString);
+				int waitpid_error = (waitpid(pID,NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				if (waitpid_error == -1)//error in waitpid
+				{
+					perror("waitpid error\n");
+				
+				}
+				//return fg process variable to "no fg" process state
+				fgPid = -1;
+				strcpy(fgCmd, "\0");
 					
 	}
 }
@@ -286,7 +361,7 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 		case 0:
 			// Child Process
 			setpgrp();
-			execv(Command, args);
+			execvp(Command, args);
 			//execv only return in case of error,so if the code reached the next line an error ocurred
 			perror("cannot execute command");
 			return -1;

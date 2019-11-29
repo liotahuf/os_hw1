@@ -13,8 +13,9 @@ main file. This file contains the main function of smash
 #define MAX_LINE_SIZE 80
 #define MAXARGS 20
 
-extern int fgPid;
-job* L_Fg_Cmd;
+//extern int fgPid;   ----->declared at comands.h,no need to declare here no?
+//extern char fgCmd[MAX_LINE_SIZE]; ----->declared at comands.h,no need to declare here no?
+extern char* L_Fg_Cmd;
 extern job jobs[MAX_JOBS_SIZE];
 //This represents the list of jobs. Please change to a preferred type (array os structs,each struc with name,pid and time)
 char lineSize[MAX_LINE_SIZE]; 
@@ -61,6 +62,9 @@ int main(int argc, char *argv[])
 		jobs[i].entry_time = 0;
 		jobs[i].stopped = 0;
 	}
+	/*---------initialize fg process----------------*/
+	fgPid = -1;
+	strcpy(fgCmd, "\0");
 	
 	//calling signal_handler_func with cntlc and cntlz functions.
 	signal_handler_func(SIGINT, &cntlc);

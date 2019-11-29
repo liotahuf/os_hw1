@@ -43,5 +43,8 @@ void updateJobs(job jobs[MAX_JOBS_SIZE]);
 
  } job;
 
+ int fgPid;
+ char fgCmd[MAX_LINE_SIZE];
+
 #endif
 
