@@ -207,6 +207,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						return 1;
 					}
 				}
+				printf("signal SIGCONT was sent to pid %d", fgCmd);
 				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
@@ -246,6 +247,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						return 1;
 					}
 				}
+				printf("signal SIGCONT was sent to pid %d", fgCmd);
 				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
