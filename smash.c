@@ -13,9 +13,9 @@ main file. This file contains the main function of smash
 #define MAX_LINE_SIZE 80
 #define MAXARGS 20
 
-
-char* L_Fg_Cmd;
-job jobs[MAX_JOBS_SIZE];
+extern int fgPid;
+job* L_Fg_Cmd;
+extern job jobs[MAX_JOBS_SIZE];
 //This represents the list of jobs. Please change to a preferred type (array os structs,each struc with name,pid and time)
 char lineSize[MAX_LINE_SIZE]; 
 //**************************************************************************************
@@ -62,7 +62,9 @@ int main(int argc, char *argv[])
 		jobs[i].stopped = 0;
 	}
 	
-	
+	//calling signal_handler_func with cntlc and cntlz functions.
+	signal_handler_func(SIGINT, &cntlc);
+	signal_handler_func(SIGTSTP, &cntlz);
 	
 	L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
 	if (L_Fg_Cmd == NULL) 
