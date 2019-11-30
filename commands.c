@@ -428,7 +428,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 	/*************************************************/
 	else // external command
 	{
- 		ExeExternal(args, cmdString);
+ 		ExeExternal(args, cmd);
 	 	return 0;
 	}
 	if (illegal_cmd == TRUE)
