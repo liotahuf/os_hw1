@@ -63,7 +63,7 @@ void handler_cntlc()
 void handler_cntlz()
 {
 	if (fg_job.pid != -1) {
-		printf("signal SIGTSTP was sent to pid %d\n", fg_job.pid);
+
 		if (kill(fg_job.pid, SIGTSTP) == -1)
 		{
 			perror("ctrl Z did not work\n");
@@ -71,7 +71,8 @@ void handler_cntlz()
 		}
 		else
 		{
-			printf("%d job stopped  %s\n", fg_job.pid, fg_job.job_name);
+			printf("signal SIGTSTP was sent to pid %d\n", fg_job.pid);
+			//printf("%d job stopped  %s\n", fg_job.pid, fg_job.job_name);
 			updateJobs(jobs);
 			if(fg_job.entry_time ==0)
 			{

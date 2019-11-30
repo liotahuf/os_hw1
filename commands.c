@@ -208,7 +208,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				strcpy(fg_job.job_name, jobs[i].job_name);
 				fg_job.entry_time = jobs[i].entry_time;;
 				fg_job.stopped = jobs[i].stopped;
-				printf("%s", fg_job.job_name);
+				printf("%s\n", fg_job.job_name);
 				if (jobs[i].stopped == 1) //suspeded process need to wake it up
 				{
 					int kill_error = kill(fg_job.pid, SIGCONT);
