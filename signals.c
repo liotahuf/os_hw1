@@ -5,8 +5,15 @@
 #include "signals.h"
 #include "commands.h"
 
-extern job* L_Fg_Cmd;
-extern job* jobs[MAX_JOBS_SIZE];
+
+//pid -1
+//if pid !=-1 check if !stopped then enter to the list  
+//fgCmd
+//stped
+//time
+//update....
+
+extern job jobs[MAX_JOBS_SIZE];
 
 
 //********************************************
@@ -22,6 +29,7 @@ void signal_handler_func(int signal, signal_handler signal_handler)
 	if (sigaction(signal, &act, NULL) == -1)
 	{
 		perror("There is an error in sigaction.\n");
+		exit(1);
 	}
 }
 
@@ -42,8 +50,9 @@ void handler_cntlc()
 		}
 		else
 		{
-			printf("%d job run ended in the foreground  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
-			L_Fg_Cmd->state = BACKGROUND;
+			printf("%d job terminated  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
+
+			L_Fg_Cmd ;
 		}
 	}
 }
@@ -78,7 +87,7 @@ void handler_cntlz()
 					break;
 				}
 			}
-			L_Fg_Cmd->state = STOPPED;
+			L_Fg_Cmd->stopped = true;
 		}
 	}
 }
