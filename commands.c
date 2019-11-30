@@ -420,7 +420,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			}
 			else
 			{
-				printf("%s has been renamed to %s", args[1], args[2]);
+				printf("%s has been renamed to %s\n", args[1], args[2]);
 			}
 		}
 
