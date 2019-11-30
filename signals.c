@@ -34,7 +34,7 @@ void signal_handler_func(int signal, signal_handler signal_handler)
 void handler_cntlc()
 {
 	if (fg_job.pid!=-1) {
-		printf("signal SIGINT was sent to pid %d\n", fg_job.pid);
+
 		if (kill(fg_job.pid, SIGINT) == -1)
 		{
 			perror("ctrl C did not work\n");
@@ -42,7 +42,8 @@ void handler_cntlc()
 		}
 		else
 		{
-			printf("%d job terminated  %s\n", fg_job.pid, fg_job.job_name);
+			printf("signal SIGINT was sent to pid %d\n", fg_job.pid);
+			//printf("%d job terminated  %s\n", fg_job.pid, fg_job.job_name);
 			//change fg_job to no fg process
 			fg_job.pid = -1;
 			strcpy(fg_job.job_name, "\0");
