@@ -459,7 +459,7 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 					execvp(cmdString, args);
 					//execv only return in case of error,so if the code reached the next line an error ocurred
 					perror("cannot execute command");
-					return;
+					exit(1);
 			
 			default:
                 	// in this case, this is the parent process,we run the fg process.
