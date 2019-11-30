@@ -156,11 +156,11 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				time_in_job_list = curr_time - jobs[i].entry_time;
 				if (jobs[i].stopped == 1)
 				{
-					printf("[%d] %s : %d %ld secs (Stopped)\n", i, jobs[i].job_name, jobs[i].pid, time_in_job_list);
+					printf("[%d] %s : %d %ld secs (Stopped)\n", i+1, jobs[i].job_name, jobs[i].pid, time_in_job_list);
 				}
 				else
 				{
-					printf("[%d] %s : %d %ld secs\n", i, jobs[i].job_name, jobs[i].pid, time_in_job_list);
+					printf("[%d] %s : %d %ld secs\n", i+1, jobs[i].job_name, jobs[i].pid, time_in_job_list);
 				}
 				
 			}
