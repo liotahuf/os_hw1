@@ -570,9 +570,9 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 			
 
 		}
-			   			
+		return 0;
 	}
-	return -1;
+	return 1;
 }
 //**************************************************************************************
 // function name: updateHistory
