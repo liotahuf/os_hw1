@@ -16,7 +16,7 @@ main file. This file contains the main function of smash
 //extern int fgPid;   ----->declared at comands.h,no need to declare here no?
 //extern char fgCmd[MAX_LINE_SIZE]; ----->declared at comands.h,no need to declare here no?
 extern char* L_Fg_Cmd;
-extern job jobs[MAX_JOBS_SIZE];
+
 //This represents the list of jobs. Please change to a preferred type (array os structs,each struc with name,pid and time)
 char lineSize[MAX_LINE_SIZE]; 
 //**************************************************************************************
@@ -63,12 +63,14 @@ int main(int argc, char *argv[])
 		jobs[i].stopped = 0;
 	}
 	/*---------initialize fg process----------------*/
-	fgPid = -1;
-	strcpy(fgCmd, "\0");
+	fg_job.pid = -1;
+	strcpy(fg_job.job_name, "\0");
+	fg_job.entry_time = 0;
+	fg_job.stopped = FALSE;
 	
 	//calling signal_handler_func with cntlc and cntlz functions.
-	signal_handler_func(SIGINT, &cntlc);
-	signal_handler_func(SIGTSTP, &cntlz);
+	signal_handler_func(SIGINT, &handler_cntlc);
+	signal_handler_func(SIGTSTP, &handler_cntlz);
 	
 	L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
 	if (L_Fg_Cmd == NULL) 

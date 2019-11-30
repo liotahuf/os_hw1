@@ -177,7 +177,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 	else if (!strcmp(cmd, "fg")) 
 	{
 		updateJobs(jobs);//first,update jobs list
-		if (num_arg == 0) // showpid should have no addicional arguments
+		if (num_arg == 0) // fg last "backgrounded" process
 		{
 			int i;
 			for (i = 0; i < MAX_JOBS_SIZE; i++)
@@ -195,28 +195,32 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			{
 				i--;
 
-				fgPid = jobs[i].pid;
-				strcpy(fgCmd, jobs[i].job_name);
-				printf("%s", fgCmd);
+				fg_job.pid = jobs[i].pid;
+				strcpy(fg_job.job_name, jobs[i].job_name);
+				fg_job.entry_time = jobs[i].entry_time;;
+				fg_job.stopped = jobs[i].stopped;
+				printf("%s", fg_job.job_name);
 				if (jobs[i].stopped == 1) //suspeded process need to wake it up
 				{
-					int kill_error = kill(fgPid, SIGCONT);
+					int kill_error = kill(fg_job.pid, SIGCONT);
 					if (kill_error == -1)
 					{
 						perror("kill error\n");
 						return 1;
 					}
 				}
-				printf("signal SIGCONT was sent to pid %d", fgCmd);
-				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				printf("signal SIGCONT was sent to pid %d", fg_job.pid);
+				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
 					perror("waitpid error\n");
 
 				}
 				//return fg process variable to "no fg" process state
-				fgPid = -1;
-				strcpy(fgCmd, "\0");
+				fg_job.pid = -1;
+				strcpy(fg_job.job_name, "\0");
+				fg_job.entry_time = 0;
+				fg_job.stopped = FALSE;
 				return 0;
 
 			}
@@ -235,28 +239,33 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			}
 			else
 			{
-				fgPid = jobs[i].pid;
-				strcpy(fgCmd, jobs[i].job_name);
-				printf("%s", fgCmd);
+
+				fg_job.pid = jobs[i].pid;
+				strcpy(fg_job.job_name, jobs[i].job_name);
+				fg_job.entry_time = jobs[i].entry_time;;
+				fg_job.stopped = jobs[i].stopped;
+				printf("%s", fg_job.job_name);
 				if (jobs[i].stopped == 1) //suspeded process need to wake it up
 				{
-					int kill_error = kill(fgPid, SIGCONT);
+					int kill_error = kill(fg_job.pid, SIGCONT);
 					if (kill_error == -1)
 					{
 						perror("kill error\n");
 						return 1;
 					}
 				}
-				printf("signal SIGCONT was sent to pid %d", fgCmd);
-				int waitpid_error = (waitpid(fgPid, NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				printf("signal SIGCONT was sent to pid %d", fg_job.pid);
+				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
 					perror("waitpid error\n");
 
 				}
 				//return fg process variable to "no fg" process state
-				fgPid = -1;
-				strcpy(fgCmd, "\0");
+				fg_job.pid = -1;
+				strcpy(fg_job.job_name, "\0");
+				fg_job.entry_time = 0;
+				fg_job.stopped = FALSE;
 				return 0;
 			}
 			
@@ -266,7 +275,43 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 	/*************************************************/
 	else if (!strcmp(cmd, "bg")) 
 	{
-  		
+		updateJobs(jobs);//first,update jobs list
+		if (num_arg == 0) // bg last suspended process
+		{
+			int i;
+			//find last process in jobs list
+			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			{
+				if (jobs[i].pid == -1)//last jobs found
+				{
+					break;
+				}
+			}
+			if (i == 0)//jobs list is empty
+			{
+				illegal_cmd = TRUE;
+			}
+			else
+			{
+				i--;//return to last real jobs in jobs list
+				for (; i >= 0; i--)//search for last suspende job
+				{
+					if (jobs[i].stopped == 1)
+					{
+						break;
+					}
+				}
+				if (i < 0)//no job in jobs list is a suspende job
+				{
+					illegal_cmd = TRUE;
+				}
+				else //last suspende job in jobs list found
+				{
+
+				}
+			}
+			
+		}
 	}
 	/*************************************************/
 	else if (!strcmp(cmd, "quit"))
@@ -311,17 +356,22 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 			
 			default:
                 	// in this case, this is the parent process,we run the fg process.
-				fgPid = pID;//update fg process in order to know who to suspend in case of ctrl-Z
-				strcpy(fgCmd, cmdString);
-				int waitpid_error = (waitpid(pID,NULL, WUNTRACED); //wait until fg process is over or has been suspended
+				//update fg process in order to know who to suspend in case of ctrl-Z
+				fg_job.pid = pID;
+				strcpy(fg_job.job_name, cmdString);
+				fg_job.entry_time = 0;
+				fg_job.stopped = FALSE;
+				int waitpid_error = (waitpid(pID,NULL, WUNTRACED)); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
 					perror("waitpid error\n");
 				
 				}
 				//return fg process variable to "no fg" process state
-				fgPid = -1;
-				strcpy(fgCmd, "\0");
+				fg_job.pid = -1;
+				strcpy(fg_job.job_name, "\0");
+				fg_job.entry_time = 0;
+				fg_job.stopped = FALSE;
 					
 	}
 }
@@ -353,6 +403,7 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 	char* Command;
 	char* delimiters = " \t\n";
 	char *args[MAX_ARG];
+	updateJobs(jobs);
 	if (strlen(lineSize) < 2) // not long enougth to be bgcmd
 	{
 		return -1;
@@ -394,20 +445,20 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 				//find free idx in jobs array
 				for (i = 0; i < MAX_JOBS_SIZE; i++)
 				{
-					if (jobs->pid == -1)
+					if (jobs[i].pid == -1)
 					{
 						break;
 					}
 				}
-				strcpy(jobs->job_name, Command);
+				strcpy(jobs[i].job_name, Command);
 				//get entry time in jobs list
 				time_t seconds;
 				seconds = time(NULL);
 				long int curr_time = (long int)seconds;
-				jobs->entry_time = curr_time;
+				jobs[i].entry_time = curr_time;
 				//job pid is the int pID because in case of father process, fork returns the child pid
-				jobs->pid = pID;
-				jobs->stopped = FALSE;//was not stoped by ctrl-Z
+				jobs[i].pid = pID;
+				jobs[i].stopped = FALSE;//was not stoped by ctrl-Z
 			}
 			
 

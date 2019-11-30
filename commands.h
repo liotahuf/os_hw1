@@ -17,7 +17,7 @@
 #define MAX_JOBS_SIZE 100
 #define MAX_JOB_NAME 50
 
-job fg_job;
+
 typedef enum { FALSE , TRUE } bool;
 int ExeComp(char* lineSize);
 int BgCmd(char* lineSize, void* jobs);
@@ -43,6 +43,8 @@ void updateJobs(job jobs[MAX_JOBS_SIZE]);
 	 bool stopped;
  } job;
 
+ job fg_job;
+ job jobs[MAX_JOBS_SIZE];
 
 #endif
 
