@@ -513,7 +513,7 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 	updateJobs(jobs);
 	if (strlen(lineSize) < 2) // not long enougth to be bgcmd
 	{
-		return -1;
+		return 1;
 	}
 	if (lineSize[strlen(lineSize)-2] == '&')
 	{
