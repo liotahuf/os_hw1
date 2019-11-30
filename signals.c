@@ -4,16 +4,7 @@
 
 #include "signals.h"
 #include "commands.h"
-
-
-//pid -1
-//if pid !=-1 check if !stopped then enter to the list  
-//fgCmd
-//stped
-//time
-//update....
-
-extern job jobs[MAX_JOBS_SIZE];
+#include <string.h>
 
 
 //********************************************
@@ -42,25 +33,22 @@ void signal_handler_func(int signal, signal_handler signal_handler)
 //**************************************************************************************
 void handler_cntlc()
 {
-	printf("\n");
-	if (L_Fg_Cmd != NULL) {
-		if (kill(L_Fg_Cmd->pid, SIGINT) == -1)
+	if (fg_job != NULL) {
+		printf("signal SIGINT was sent to pid %d\n", fg_job.pid);
+		if (kill(fg_job.pid, SIGINT) == -1)
 		{
 			perror("ctrl C did not work\n");
+			exit(1);
 		}
 		else
 		{
-			printf("%d job terminated  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
-
-			L_Fg_Cmd ;
+			printf("%d job terminated  %s\n", fg_job.pid, fg_job.job_name);
+			fg_job = NULL; // TODO: ask if to put NULL. 			
 		}
 	}
 }
 
 }
-
-
-
 
 //********************************************
 // function name: handler_cntlz
@@ -70,24 +58,31 @@ void handler_cntlc()
 //**************************************************************************************
 void handler_cntlz()
 {
-	printf("\n");
-	if (L_Fg_Cmd != NULL) {
-		if (kill(L_Fg_Cmd->pid, SIGTSTP) == -1)
+	if (fg_job != NULL) {
+		printf("signal SIGTSTP was sent to pid %d\n", fg_job.pid);
+		if (kill(fg_job.pid, SIGTSTP) == -1)
 		{
 			perror("ctrl Z did not work\n");
+			exit(1);
 		}
 		else
 		{
-			printf("%d job stopped  %s\n", L_Fg_Cmd->pid, L_Fg_Cmd->job_name);
+			printf("%d job stopped  %s\n", fg_job.pid, fg_job.job_name);
 			for (i = 0; i < MAX_JOBS_SIZE; i++)
 			{
-				if (jobs[i] == NULL)
+				if (jobs[i].pid == -1 && fg_job.stopped == false)
 				{
-					jobs[i] = L_Fg_Cmd;
+					time_t seconds;
+					seconds = time(NULL);
+					long int curr_time = (long int)seconds;
+					jobs[i].entry_time = curr_time;
+					jobs[i].pid = fg_job.pid;
+					strcpy(jobs[i].job_name, fg_job.job_name);
+					fg_job.stopped = true;
+					jobs[i].stopped = fg_job.stopped;
 					break;
 				}
 			}
-			L_Fg_Cmd->stopped = true;
 		}
 	}
 }
