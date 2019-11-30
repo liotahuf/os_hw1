@@ -351,8 +351,71 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 	/*************************************************/
 	else if (!strcmp(cmd, "quit"))
 	{
-   		
-	} 
+		if (num_arg == 0) // need to quit smash
+		{
+			exit(0);
+		}
+		else if (!strcmp(args[1],"kill") && (num_arg==1)) //exit every child still running
+		{
+			updateJobs(jobs);
+			int i;
+			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			{
+				if (jobs[i].pid == -1)//found last job in jobs list
+				{
+					break;
+				}
+				int kill_error = kill(jobs[i].pid, SIGTERM);
+				if (kill_error == -1)
+				{
+					perror("kill error\n");
+					return 1;
+				}
+				printf("signal SIGTERM was sent to pid %d", jobs[i].pid);
+				sleep(5);
+				 
+				if (waitpid(jobs[i].pid, NULL, WNOHANG) == 0) //in this case, the job is not over! need to send sigkill
+				{
+					int kill_error = kill(jobs[i].pid, SIGKILL);
+					if (kill_error == -1)
+					{
+						perror("kill error\n");
+						return 1;
+					}
+					printf("signal SIGKILL was sent to pid %d", jobs[i].pid);
+					
+				}
+
+			}
+			exit(0); // every jobs was killed,now exit smahs
+		}
+		else
+		{
+			illegal_cmd = TRUE;
+		}
+	}
+	/*************************************************/
+	else if (!strcmp(cmd, "mv"))
+	{
+		if (num_arg != 2)
+		{
+			illegal_cmd = TRUE;
+		}
+		else
+		{
+			int rename_error = rename(args[1], args[2]);
+			if (rename_error != 0)
+			{
+				perror("rename error\n");
+				return 1;
+			}
+			else
+			{
+				printf("%s has been renamed to %s", args[1], args[2]);
+			}
+		}
+
+	}
 	/*************************************************/
 	else // external command
 	{

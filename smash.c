@@ -13,8 +13,7 @@ main file. This file contains the main function of smash
 #define MAX_LINE_SIZE 80
 #define MAXARGS 20
 
-//extern int fgPid;   ----->declared at comands.h,no need to declare here no?
-//extern char fgCmd[MAX_LINE_SIZE]; ----->declared at comands.h,no need to declare here no?
+
 extern char* L_Fg_Cmd;
 
 //This represents the list of jobs. Please change to a preferred type (array os structs,each struc with name,pid and time)
