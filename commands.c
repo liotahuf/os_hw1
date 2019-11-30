@@ -218,7 +218,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						return 1;
 					}
 				}
-				printf("signal SIGCONT was sent to pid %d", fg_job.pid);
+				printf("signal SIGCONT was sent to pid %d\n", fg_job.pid);
 				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
@@ -263,7 +263,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						return 1;
 					}
 				}
-				printf("signal SIGCONT was sent to pid %d", fg_job.pid);
+				printf("signal SIGCONT was sent to pid %d\n", fg_job.pid);
 				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
 				if (waitpid_error == -1)//error in waitpid
 				{
@@ -322,7 +322,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						perror("kill error\n");
 						return 1;
 					}
-					printf("signal SIGCONT was sent to pid %d", jobs[i].pid);
+					printf("signal SIGCONT was sent to pid %d\n", jobs[i].pid);
 					
 				}
 				
@@ -348,7 +348,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						perror("kill error\n");
 						return 1;
 					}
-					printf("signal SIGCONT was sent to pid %d", jobs[i].pid);
+					printf("signal SIGCONT was sent to pid %d\n", jobs[i].pid);
 
 				}
 			}
@@ -380,7 +380,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 					perror("kill error\n");
 					return 1;
 				}
-				printf("signal SIGTERM was sent to pid %d", jobs[i].pid);
+				printf("signal SIGTERM was sent to pid %d\n", jobs[i].pid);
 				sleep(5);
 				 
 				if (waitpid(jobs[i].pid, NULL, WNOHANG) == 0) //in this case, the job is not over! need to send sigkill
@@ -391,7 +391,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 						perror("kill error\n");
 						return 1;
 					}
-					printf("signal SIGKILL was sent to pid %d", jobs[i].pid);
+					printf("signal SIGKILL was sent to pid %d\n", jobs[i].pid);
 					
 				}
 
@@ -638,10 +638,10 @@ void updateJobs(job jobs[MAX_JOBS_SIZE])
 		//places in the jobs array where there are still jobs
 		if (i < j)
 		{
-			strcpy(jobs[i].job_name, tmp_jobs[j].job_name);
-			jobs[i].pid = tmp_jobs[j].pid ;
-			jobs[i].entry_time = tmp_jobs[j].entry_time ;
-			jobs[i].stopped = tmp_jobs[j].stopped ;
+			strcpy(jobs[i].job_name, tmp_jobs[i].job_name);
+			jobs[i].pid = tmp_jobs[i].pid ;
+			jobs[i].entry_time = tmp_jobs[i].entry_time ;
+			jobs[i].stopped = tmp_jobs[i].stopped ;
 			
 		}
 		else // initialize rest of jobs array to initial condition
