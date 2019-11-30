@@ -307,12 +307,47 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				}
 				else //last suspende job in jobs list found
 				{
+					int kill_error = kill(jobs[i].pid, SIGCONT);
+					if (kill_error == -1)
+					{
+						perror("kill error\n");
+						return 1;
+					}
+					printf("signal SIGCONT was sent to pid %d", jobs[i].pid);
+					
+				}
+				
+			}
+		}
+		else //if(num_args==1)?
+		{
+			int i;
+			sscanf(args[i], "%d", &i);//get number of the chose job to move to fg
+
+			if (jobs[i].pid == -1)//make sure it is a legal cmd,i.e., the chosen process does exist in job list
+			{
+				illegal_cmd = TRUE;
+
+			}
+			else
+			{
+				if (jobs[i].stopped == 1)
+				{
+					int kill_error = kill(jobs[i].pid, SIGCONT);
+					if (kill_error == -1)
+					{
+						perror("kill error\n");
+						return 1;
+					}
+					printf("signal SIGCONT was sent to pid %d", jobs[i].pid);
 
 				}
 			}
-			
+
 		}
+			
 	}
+	
 	/*************************************************/
 	else if (!strcmp(cmd, "quit"))
 	{

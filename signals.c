@@ -33,7 +33,7 @@ void signal_handler_func(int signal, signal_handler signal_handler)
 //**************************************************************************************
 void handler_cntlc()
 {
-	if (fg_job != NULL) {
+	if (fg_job.pid!=-1) {
 		printf("signal SIGINT was sent to pid %d\n", fg_job.pid);
 		if (kill(fg_job.pid, SIGINT) == -1)
 		{
@@ -62,7 +62,7 @@ void handler_cntlc()
 //**************************************************************************************
 void handler_cntlz()
 {
-	if (fg_job != NULL) {
+	if (fg_job.pid != -1) {
 		printf("signal SIGTSTP was sent to pid %d\n", fg_job.pid);
 		if (kill(fg_job.pid, SIGTSTP) == -1)
 		{
@@ -72,9 +72,10 @@ void handler_cntlz()
 		else
 		{
 			printf("%d job stopped  %s\n", fg_job.pid, fg_job.job_name);
-			for (i = 0; i < MAX_JOBS_SIZE; i++)
+			updateJobs(jobs);
+			for (int i = 0; i < MAX_JOBS_SIZE; i++)
 			{
-				if (jobs[i].pid == -1 && fg_job.stopped == false)
+				if (jobs[i].pid == -1 && fg_job.stopped == 0)
 				{
 					time_t seconds;
 					seconds = time(NULL);
@@ -82,7 +83,7 @@ void handler_cntlz()
 					jobs[i].entry_time = curr_time;
 					jobs[i].pid = fg_job.pid;
 					strcpy(jobs[i].job_name, fg_job.job_name);
-					fg_job.stopped = true;
+					fg_job.stopped = 1;
 					jobs[i].stopped = fg_job.stopped;
 					break;
 				}
@@ -91,7 +92,7 @@ void handler_cntlz()
 			fg_job.pid = -1;
 			strcpy(fg_job.job_name, "\0");
 			fg_job.entry_time = 0;
-			fg_job.stopped = FALSE;
+			fg_job.stopped = 0;
 		}
 	}
 }
