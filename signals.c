@@ -43,7 +43,11 @@ void handler_cntlc()
 		else
 		{
 			printf("%d job terminated  %s\n", fg_job.pid, fg_job.job_name);
-			fg_job = NULL; // TODO: ask if to put NULL. 			
+			//change fg_job to no fg process
+			fg_job.pid = -1;
+			strcpy(fg_job.job_name, "\0");
+			fg_job.entry_time = 0;
+			fg_job.stopped = FALSE;
 		}
 	}
 }
@@ -83,6 +87,11 @@ void handler_cntlz()
 					break;
 				}
 			}
+			//change fg_job to no fg process
+			fg_job.pid = -1;
+			strcpy(fg_job.job_name, "\0");
+			fg_job.entry_time = 0;
+			fg_job.stopped = FALSE;
 		}
 	}
 }
