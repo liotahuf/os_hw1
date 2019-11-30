@@ -220,7 +220,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				}
 				printf("signal SIGCONT was sent to pid %d\n", fg_job.pid);
 				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
-				if (waitpid_error == -1)//error in waitpid
+				if (waitpid_error == 0)//error in waitpid
 				{
 					perror("waitpid error\n");
 
@@ -265,7 +265,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				}
 				printf("signal SIGCONT was sent to pid %d\n", fg_job.pid);
 				int waitpid_error = (waitpid(fg_job.pid, NULL, WUNTRACED)); //wait until fg process is over or has been suspended
-				if (waitpid_error == -1)//error in waitpid
+				if (waitpid_error == 0)//error in waitpid
 				{
 					perror("waitpid error\n");
 
@@ -469,7 +469,7 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 				fg_job.entry_time = 0;
 				fg_job.stopped = FALSE;
 				int waitpid_error = (waitpid(pID,NULL, WUNTRACED)); //wait until fg process is over or has been suspended
-				if (waitpid_error == -1)//error in waitpid
+				if (waitpid_error == 0)//error in waitpid
 				{
 					perror("waitpid error\n");
 				
@@ -542,7 +542,7 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 			execvp(Command, args);
 			//execv only return in case of error,so if the code reached the next line an error ocurred
 			perror("cannot execute command");
-			return -1;
+			exit(1);
 
 		default:
 			// in this case, this is the parent process,we need to update the jobs list process.

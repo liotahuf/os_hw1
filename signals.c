@@ -16,7 +16,12 @@
 void signal_handler_func(int signal, signal_handler signal_handler)
 {
 	struct sigaction act;
+	sigset_t signalSet;
+	sigfillset(&signalSet);
+
 	act.sa_handler = signal_handler;
+	act.sa_flags =0;
+	act.sa_mask = signalSet;
 	if (sigaction(signal, &act, NULL) == -1)
 	{
 		perror("There is an error in sigaction.\n");
