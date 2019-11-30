@@ -52,7 +52,7 @@ void handler_cntlc()
 	}
 }
 
-}
+
 
 //********************************************
 // function name: handler_cntlz
