@@ -73,21 +73,26 @@ void handler_cntlz()
 		{
 			printf("%d job stopped  %s\n", fg_job.pid, fg_job.job_name);
 			updateJobs(jobs);
-			for (int i = 0; i < MAX_JOBS_SIZE; i++)
+			if(fg_job.entry_time ==0)
 			{
-				if (jobs[i].pid == -1 && fg_job.stopped == 0)
+				for (int i = 0; i < MAX_JOBS_SIZE; i++)
 				{
-					time_t seconds;
-					seconds = time(NULL);
-					long int curr_time = (long int)seconds;
-					jobs[i].entry_time = curr_time;
-					jobs[i].pid = fg_job.pid;
-					strcpy(jobs[i].job_name, fg_job.job_name);
-					fg_job.stopped = 1;
-					jobs[i].stopped = fg_job.stopped;
-					break;
+					if (jobs[i].pid == -1)
+					{
+						time_t seconds;
+						seconds = time(NULL);
+						long int curr_time = (long int)seconds;
+						jobs[i].entry_time = curr_time;
+						jobs[i].pid = fg_job.pid;
+						strcpy(jobs[i].job_name, fg_job.job_name);
+						fg_job.stopped = 1;
+						jobs[i].stopped = fg_job.stopped;
+						break;
+					}
 				}
 			}
+
+
 			//change fg_job to no fg process
 			fg_job.pid = -1;
 			strcpy(fg_job.job_name, "\0");
