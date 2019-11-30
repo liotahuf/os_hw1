@@ -56,7 +56,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 					}
 					else //chdir successed,update lastDir
 					{
-						lastDir = getcwd(buf);
+						lastDir = getcwd(buf,sizeof(buf));
 					}	return 0; //success
 				}
 				else {} // TODO
@@ -66,12 +66,13 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				chdir_error = chdir(args[1]);
 				if(chdir_error==-1) // chdir returned an error
 				{
-					perror("smash error: > %s - path not found",args[1]);
+					//perror("smash error: > %s - path not found",args[1]);
+					perror("smash error: > - path not found");
 					return 1;
 				}
 				else //chdir successed,update lastDir
 				{
-					lastDir = getcwd(buf);
+					lastDir = getcwd(buf,sizeof(buf));
 				}	return 0; //success
 			}
 		}
@@ -133,7 +134,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			int i;
 			for (i = 0; i < MAX_JOBS_SIZE; i++)
 			{
-				if (jobs[i].pid = -1)
+				if (jobs[i].pid == -1)
 				{
 					break;
 				}
@@ -525,7 +526,7 @@ int BgCmd(char* lineSize, job jobs[MAX_JOBS_SIZE])
 		{
 		case -1:
 			perror("fork error\n");
-			return;
+			return -1;
 
 		case 0:
 			// Child Process

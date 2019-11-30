@@ -14,7 +14,7 @@ main file. This file contains the main function of smash
 #define MAXARGS 20
 
 
-extern char* L_Fg_Cmd;
+char* L_Fg_Cmd;
 
 //This represents the list of jobs. Please change to a preferred type (array os structs,each struc with name,pid and time)
 char lineSize[MAX_LINE_SIZE]; 
