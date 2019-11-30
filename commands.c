@@ -29,7 +29,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
  
 	}
 	
-	static char* lastDir = NULL;
+	static char lastDir[MAX_LINE_SIZE];
 /*************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED
 // ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
@@ -43,23 +43,31 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 			illegal_cmd = TRUE; 
 		}
 		else 
-		{	char *buf =NULL;//so getdir mallocs the size of pwd
-			if (args[1]=="-") // return to last dir
+		{	char buf [MAX_LINE_SIZE];
+			if( (getcwd(buf,MAX_LINE_SIZE) )== NULL )
+			{
+				perror("getcwd error\n");
+				return 1;
+			}
+			if (!strcmp(args[1],"-")) // return to last dir
 			{
 				if (lastDir!= NULL)
 				{
 					chdir_error = chdir(lastDir);
 					if(chdir_error==-1) // chdir returned an error
 					{
-						perror("chdir fail\n");
+						perror("chdir error\n");
 						return 1;
 					}
 					else //chdir successed,update lastDir
 					{
-						lastDir = getcwd(buf,sizeof(buf));
+						strcpy(lastDir,buf);
 					}	return 0; //success
 				}
-				else {} // TODO
+				else
+				{
+					illegal_cmd = TRUE;
+				}
 
 			}else //chdri to dir in arg[1]
 			{
@@ -72,7 +80,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 				}
 				else //chdir successed,update lastDir
 				{
-					lastDir = getcwd(buf,sizeof(buf));
+					strcpy(lastDir,buf);
 				}	return 0; //success
 			}
 		}
@@ -88,7 +96,7 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 		}
 		else
 		{
-			int curr_cmd = hist->cmds[hist->oldest_cmd_idx];
+			int curr_cmd =hist->oldest_cmd_idx;
 			while(curr_cmd != hist->newest_cmd_idx-1)
 			{
 				if(hist->cmds[curr_cmd]!=NULL)
@@ -482,8 +490,8 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
 //**************************************************************************************
 int ExeComp(char* lineSize)
 {
-	char ExtCmd[MAX_LINE_SIZE+2];
-	char *args[MAX_ARG];
+	//char ExtCmd[MAX_LINE_SIZE+2];
+	//char *args[MAX_ARG];
     if ((strstr(lineSize, "|")) || (strstr(lineSize, "<")) || (strstr(lineSize, ">")) || (strstr(lineSize, "*")) || (strstr(lineSize, "?")) || (strstr(lineSize, ">>")) || (strstr(lineSize, "|&")))
     {
 		return 0;
