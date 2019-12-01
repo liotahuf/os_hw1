@@ -21,7 +21,7 @@
 typedef enum { FALSE , TRUE } bool;
 /*-------------added typedef----------*/
 typedef struct History {
-	char cmds[HIST_SIZE - 1][MAX_LINE_SIZE];
+	char cmds[HIST_SIZE][MAX_LINE_SIZE];
 	int oldest_cmd_idx;
 	int newest_cmd_idx;
 	bool full;

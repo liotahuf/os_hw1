@@ -97,7 +97,16 @@ int ExeCmd(job jobs[MAX_JOBS_SIZE], char* lineSize, char* cmdString, history* hi
 		else
 		{
 			int curr_cmd =hist->oldest_cmd_idx;
-			while(curr_cmd != hist->newest_cmd_idx-1)
+			int stop_idx;
+			if(hist->newest_cmd_idx ==0)
+			{
+				stop_idx = HIST_SIZE-1;
+			}
+			else
+			{
+				stop_idx = hist->newest_cmd_idx-1;
+			}
+			while(curr_cmd != stop_idx)
 			{
 				if(hist->cmds[curr_cmd]!=NULL)
 				{
@@ -594,6 +603,10 @@ void updateHistory(char *lineSize, history* hist)
 	if (hist->newest_cmd_idx == HIST_SIZE && hist->full == 0)//cmd list was not full and now we got the cmd n0 50 then it is now full
 	{
 		hist->full = 1;
+		hist->newest_cmd_idx = hist->newest_cmd_idx % HIST_SIZE;
+	}
+	if(hist->full==1)
+	{
 		hist->newest_cmd_idx = hist->newest_cmd_idx % HIST_SIZE;
 	}
 	if ((hist->newest_cmd_idx == hist->oldest_cmd_idx+1)  &&(hist->full ==1)) //if newest command overflowed to low indexed,then need to update oldest idx
